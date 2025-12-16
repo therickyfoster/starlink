@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Launch Physics & Biosphere Interfaces — Part I</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="A physics-grounded field guide to how each launch interacts with air, water, life, and sky. Includes equations, toy models, and mitigation levers." />
+  <link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Launch & Biosphere&quot;,&quot;short_name&quot;:&quot;L&B&quot;,&quot;start_url&quot;:&quot;./index.html&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0b1020&quot;,&quot;theme_color&quot;:&quot;#0b1020&quot;}" />
+  <style>
+    :root{--bg:#0b1020;--fg:#e6f0ff;--mut:#a7b3c9;--hi:#7af3ce;--warn:#ffd479;--bad:#ff8aa4;--card:#0f1631;--line:#1e2a52;--rad:18px}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;background:radial-gradient(1200px 800px at 20% 10%,#0f1632 0%,#0b1020 50%,#070b17 100%);color:var(--fg);font:16px/1.64 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif}
+    header{min-height:60svh;display:grid;place-items:center;padding:6vmin;position:relative;overflow:hidden}
+    h1{font-size:clamp(28px,5vw,56px);margin:0 0 .3rem;font-weight:800}
+    p.lead{max-width:80ch;color:var(--mut)}
+    .btn{display:inline-block;border:1px solid var(--line);padding:.6rem .9rem;border-radius:12px;background:#121a34;color:#d8e7ff;text-decoration:none;margin-right:.6rem}
+    nav{position:sticky;top:0;background:linear-gradient(180deg,rgba(9,14,30,.85),rgba(9,14,30,.6));backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid var(--line);z-index:20}
+    nav .wrap{max-width:1100px;margin:0 auto;padding:.5rem 1rem;display:flex;gap:.6rem;overflow:auto}
+    nav a{white-space:nowrap;color:#cfe3ff;text-decoration:none;border:1px solid var(--line);padding:.35rem .55rem;border-radius:999px}
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+    section{scroll-margin-top:80px}
+    .grid{display:grid;gap:1.2rem}
+    .card{background:linear-gradient(180deg,var(--card),#0b1226);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+    .card h3{margin:0;padding:1.1rem 1.25rem;background:linear-gradient(180deg,#121a34,#0c1226);border-bottom:1px solid var(--line);font-size:1.05rem}
+    .card .body{padding:1.25rem}
+    .call{border-left:4px solid var(--hi);background:linear-gradient(180deg,#0f1937,#0a1126);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem}
+    .mut{color:var(--mut)}
+    .eq{display:block;background:#0e1531;border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin:.6rem 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .chips{display:flex;flex-wrap:wrap;gap:.45rem}
+    .chip{border:1px solid var(--line);background:#0e1531;color:#cfe3ff;border-radius:10px;padding:.25rem .55rem}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:900px){.two{grid-template-columns:1fr}}
+    .note{font-size:.86rem;color:#a9b7d8}
+    footer{opacity:.9;font-size:.95rem}
+    .wm{position:fixed;right:.75rem;bottom:.5rem;color:#6d7aa1;font-size:.72rem;opacity:.8}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Each Launch, This Living World</h1>
+      <p class="lead">A single orbital launch touches many layers: acoustic shock near the pad, jet chemistry in the troposphere/stratosphere, soot and NOx altering radiative balance, and reflected light from constellation craft. This page derives the core physics, then ties it to biosphere implications. <span class="mut">Working theories are marked as such.</span></p>
+      <a class="btn" href="#first-principles">Start with First Principles</a>
+      <a class="btn" href="part-2.html">Continue to Part II: Reentry, Sky, Spectrum</a>
+    </div>
+  </header>
+
+  <nav>
+    <div class="wrap">
+      <a href="#first-principles">First Principles</a>
+      <a href="#acoustics">Acoustics & Overpressure</a>
+      <a href="#plume">Jet Chemistry & Soot</a>
+      <a href="#ozone">Ozone & Radiative Forcing</a>
+      <a href="#propellants">Propellants & Tradeoffs</a>
+      <a href="#mitigation">Mitigation Levers</a>
+      <a href="#ledger">Local Notes</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section id="first-principles" class="grid">
+      <div class="card">
+        <h3>First Principles: Energy, Momentum, Mixing</h3>
+        <div class="body">
+          <p>Launch is a controlled conversion of chemical potential into kinetic energy and momentum flux. Near-field impacts scale with exhaust mass flow <em>\(\dot{m}\)</em>, exit velocity \(v_e\), and chamber pressure.</p>
+          <code class="eq">Thrust:  F ≈ \dot{m} · v_e + (p_e − p_a) · A_e</code>
+          <p>Acoustic intensity near the pad grows roughly with jet power \(P_j \propto \dot{m} v_e^2\), while environmental fate depends on where products (H₂O, CO₂, CO, NOₓ, soot) are injected: boundary layer, tropopause, or stratosphere. Residence times and radiative effects increase dramatically past ~12–15 km.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="acoustics" class="grid">
+      <div class="card">
+        <h3>Acoustics & Overpressure</h3>
+        <div class="body">
+          <p>Peak sound pressure levels at pads routinely exceed 160 dB. Water deluge and trench geometry reduce broadband acoustic energy and reflected shock.</p>
+          <code class="eq">SPL(r) ≈ SPL₀ − 20·log₁₀(r/r₀) − α·r  (spherical with atmospheric absorption)</code>
+          <p><strong>Biosphere implications:</strong> Nesting birds, amphibians, and marine mammals within kilometers of coastal pads experience startle/flight responses and temporary threshold shifts. Risk decays steeply with buffer distance and seasonal scheduling. <span class="mut">Working theory:</span> drone-ship landings far offshore shift acoustic risk away from wetlands but add brief marine disturbance.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="plume" class="grid">
+      <div class="card">
+        <h3>Jet Chemistry & Soot (Black Carbon)</h3>
+        <div class="body">
+          <p>Kerolox (RP-1/LOX) produces CO₂, H₂O, NOₓ, CO, and black carbon (BC). Methalox (CH₄/LOX) yields far less soot; hydrolox (H₂/LOX) essentially none. The climate relevance hinges less on mass burned than on <em>altitude of deposition</em>: soot injected into the stratosphere absorbs sunlight, warming locally and perturbing ozone chemistry via heterogeneous reactions.</p>
+          <div class="two">
+            <div>
+              <code class="eq">Radiative Forcing (toy): ΔF_BC ≈ k · (BC↑_strat) · A_abs</code>
+              <p class="note">Where \(BC↑_{strat}\) is the stratospheric BC burden and \(A_{abs}\) its absorption efficiency. Peer-reviewed modeling shows multi-year residence and measurable warming for high BC growth scenarios.</p>
+            </div>
+            <div>
+              <div class="call"><strong>Direction of evidence:</strong> High-cadence kerosene launches can raise stratospheric temperatures O(1 K) in modeled futures; methalox transition is a strong down-lever. Uncertainty remains in present-day absolute fluxes and vertical injection profiles.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ozone" class="grid">
+      <div class="card">
+        <h3>Ozone Coupling & Radiative Balance</h3>
+        <div class="body">
+          <p>Pathways include: (a) NOₓ and HOₓ chemistry from high-altitude plumes, (b) heterogeneous reactions on soot surfaces, and (c) reentry-driven alumina nanoparticles (see Part II). Ozone changes alter UV at the surface and stratospheric temperatures, feeding back on circulation.</p>
+          <code class="eq">d[O₃]/dt = P(O₃) − L(O₃; NOx, HOx, ClOx) − L_het(soot, Al₂O₃)</code>
+          <p class="note">Modeling indicates that unchecked growth in launch/reentry fluxes could delay ozone recovery; effects are propellant- and altitude-specific and are <em>mitigable</em> with cleaner propellants and cadence management.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="propellants" class="grid">
+      <div class="card">
+        <h3>Propellants & Tradeoffs (Why “Cleaner” Isn’t Magic)</h3>
+        <div class="body">
+          <ul>
+            <li><strong>Kerolox:</strong> Mature, high performance; soot formation at high chamber pressures → stratospheric BC risk at ascent.</li>
+            <li><strong>Methalox:</strong> Far lower soot; CH₄ slip negligible in well-mixed engines; plume H₂O/CO₂ still relevant at altitude.</li>
+            <li><strong>Hydrolox:</strong> No carbon; high H₂O emission in the stratosphere can affect HOx/NOx cycles but avoids BC forcing.</li>
+            <li><strong>Solid motors:</strong> Chlorine-bearing—concern for ozone when used at scale; often declining share for LEO constellation lifts.</li>
+          </ul>
+          <div class="chips" aria-label="Levers">
+            <span class="chip">Methalox shift</span><span class="chip">Higher expansion ratios</span><span class="chip">Trajectory shaping</span><span class="chip">Lower-soot injector design</span><span class="chip">Reusability to cap total flights</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mitigation" class="grid">
+      <div class="card">
+        <h3>Mitigation Levers (Peace-Economy Framing)</h3>
+        <div class="body">
+          <p>Attach yield to verifiable outcomes:</p>
+          <ul>
+            <li><strong>Pad Harmony:</strong> Water deluge + acoustic baffling + seasonal windows → wildlife-safe corridors.</li>
+            <li><strong>Clean Ascent:</strong> Methalox adoption + injector tuning → minimized BC burden.</li>
+            <li><strong>Flight Accounting:</strong> Bits-per-BC KPI: more delivered connectivity per unit atmospheric perturbation.</li>
+          </ul>
+          <div class="call"><strong>Working theory:</strong> At current global cadence, <em>localized</em> wildlife impacts are manageable with buffers; <em>global</em> climate/ozone risks hinge on soot and reentry alumina scaling. Governance must move in lockstep with cadence.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ledger" class="grid">
+      <div class="card">
+        <h3>Local Notes & Integrity</h3>
+        <div class="body">
+          <textarea id="notes" rows="6" placeholder="Your local notes (saved in your browser)..." style="width:100%;border-radius:12px;border:1px solid #1e2a52;background:#0e1531;color:#dff1ff;padding:1rem"></textarea>
+          <div style="display:flex;gap:.6rem;margin-top:.6rem">
+            <button class="btn" id="saveNotes">Save Notes</button>
+            <button class="btn" id="clearNotes">Clear</button>
+          </div>
+          <p class="note">Integrity (SHA-256 of this page, scripts excluded): <code id="hash">calculating…</code></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container">
+    <hr style="border:0;border-top:1px solid #1e2a52;opacity:.6;margin:2rem 0" />
+    <p>Signed by the on-chain consciousness of peace: <em>Zero conflict yield = maximum reconstruction yield.</em></p>
+  </footer>
+
+  <div class="wm">Foster + Navi • Part I • <span id="shortHash">…</span></div>
+
+  <script>
+    // PWA service worker (shell cache)
+    if('serviceWorker' in navigator){
+      const code = `
+        const CACHE='lb-part1-v1';
+        self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./index.html'])));self.skipWaiting()});
+        self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch',e=>{const u=new URL(e.request.url); if(u.origin===location.origin){e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))}})
+      `;
+      const blob=new Blob([code],{type:'text/javascript'}); const url=URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url);
+    }
+
+    // Integrity (exclude scripts)
+    async function sha256(s){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+    (async()=>{
+      const html=document.documentElement.outerHTML.replace(/<script[\s\S]*?<\/script>/g,'');
+      const h=await sha256(html); document.getElementById('hash').textContent=h; document.getElementById('shortHash').textContent=h.slice(0,12);
+    })();
+
+    // Notes (IndexedDB)
+    const DB='lb-ledger',STORE='kv';
+    function idb(){return new Promise((res,rej)=>{const o=indexedDB.open(DB,1);o.onupgradeneeded=()=>o.result.createObjectStore(STORE);o.onsuccess=()=>res(o.result);o.onerror=()=>rej(o.error)})}
+    async function put(k,v){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+    async function get(k){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly');const rq=tx.objectStore(STORE).get(k);rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error)})}
+    (async()=>{document.getElementById('notes').value=(await get('notes1'))||''})();
+    document.getElementById('saveNotes').addEventListener('click',async()=>{await put('notes1',document.getElementById('notes').value);alert('Saved locally.')});
+    document.getElementById('clearNotes').addEventListener('click',async()=>{await put('notes1','');document.getElementById('notes').value='';});
+  </script>
+</body>
+</html>

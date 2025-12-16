@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Starlink Launch Events & the Biosphere — A Peace-Economy Field Guide</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="A long-form, data-aware, offline-first field guide exploring how high-cadence launch events for satellite constellations interact with Earth’s biosphere. Includes working-theory models, references, and a local notes ledger." />
+  <link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Biosphere Field Guide&quot;,&quot;short_name&quot;:&quot;Biosphere&quot;,&quot;start_url&quot;:&quot;./&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0b1020&quot;,&quot;theme_color&quot;:&quot;#0b1020&quot;,&quot;icons&quot;:[]}" />
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    :root{
+      --bg:#0b1020;--fg:#e6f0ff;--muted:#a7b3c9;--accent:#7af3ce;--amber:#ffd479;--rose:#ff8aa4;--card:#11162a;--grid:#19203a;--ok:#7af39a;--warn:#ffd479;--bad:#ff8aa4;
+      --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background:radial-gradient(1200px 800px at 20% 10%,#0f1632 0%,#0b1020 45%,#070b17 100%);
+      color:var(--fg);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    header.hero{
+      position:relative; min-height:70svh; display:grid; place-items:center; padding:6vmin; overflow:hidden;
+    }
+    .hero h1{font-weight:800; font-size:clamp(28px,5vw,56px); letter-spacing:.5px; margin:0 0 .6rem}
+    .hero p{max-width:75ch; color:var(--muted); margin:.5rem 0 1.25rem}
+    .hero .badges{display:flex; gap:.6rem; flex-wrap:wrap}
+    .badge{background:linear-gradient(180deg,#1b2444,#0f1733); border:1px solid #1f2a50; padding:.45rem .75rem; border-radius:999px; color:#b9c9ff}
+    .grid{display:grid; gap:1.2rem}
+    .container{max-width:1100px; margin:0 auto; padding:2rem}
+    section{scroll-margin-top:80px}
+    .card{background:linear-gradient(180deg,var(--card),#0b1226); border:1px solid #1f2a50; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .card h3{margin:0; padding:1.1rem 1.25rem; background:linear-gradient(180deg,#121a34,#0c1226); border-bottom:1px solid #1a2345; font-size:1.05rem}
+    .card .body{padding:1.25rem}
+    .kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+    .kpi .it{background:#0e1531; border:1px solid #1f2a50; border-radius:12px; padding:1rem}
+    .kpi .lab{color:#a9b5d3;font-size:.8rem}
+    .kpi .val{font-weight:700; font-size:1.2rem; margin-top:.25rem}
+    .tag{display:inline-block; padding:.2rem .5rem; border:1px solid #2a355f; border-radius:8px; color:#b7c5ea; background:#0e1531; margin:.2rem .3rem .2rem 0}
+    .muted{color:var(--muted)}
+    .accent{color:var(--accent)}
+    .warn{color:var(--warn)}
+    .bad{color:var(--bad)}
+    .ok{color:var(--ok)}
+    nav.toc{position:sticky; top:0; backdrop-filter:saturate(140%) blur(10px); background:linear-gradient(180deg,rgba(9,14,30,.8),rgba(9,14,30,.6)); border-bottom:1px solid #182046; z-index:50}
+    nav.toc .wrap{max-width:1100px;margin:0 auto; display:flex; gap:1rem; padding:.6rem 1rem; overflow:auto}
+    nav.toc a{white-space:nowrap; color:#cfe3ff; text-decoration:none; padding:.35rem .6rem; border-radius:999px; border:1px solid #2a355f}
+    nav.toc a:hover{background:#121a34}
+    .pill{display:inline-flex; align-items:center; gap:.5rem; padding:.55rem .8rem; border-radius:999px; border:1px solid #2a355f; background:#0e1531; color:#cfe3ff}
+    .foot{opacity:.9; font-size:.9rem}
+    .callout{border-left:4px solid var(--accent); background:linear-gradient(180deg,#0f1937,#0a1126); padding:1rem 1.2rem; border-radius:12px; border:1px solid #1e2a52}
+    .sim{display:grid;grid-template-columns:1fr 1fr; gap:1rem}
+    .sim .panel{background:#0e1531; border:1px solid #1f2a50; border-radius:12px; padding:1rem}
+    .sim label{font-size:.85rem; color:#b7c5ea}
+    .sim input[type=range]{width:100%}
+    .chips{display:flex; flex-wrap:wrap; gap:.4rem}
+    .legend{display:flex; gap:1rem; align-items:center; flex-wrap:wrap}
+    .legend .key{display:flex; align-items:center; gap:.4rem}
+    .dot{width:.75rem;height:.75rem;border-radius:50%}
+    .dot.acoustic{background:#6fb3ff}
+    .dot-plume{background:#a4ffcc}
+    .dot-soot{background:#ffd479}
+    .dot-light{background:#ff9ad1}
+    canvas#stars{position:absolute; inset:0; width:100%; height:100%; z-index:-1}
+    .cta{display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem}
+    button,.btn{
+      background:#131b38; border:1px solid #2a355f; color:#d8e7ff; padding:.6rem .9rem; border-radius:12px; cursor:pointer;
+    }
+    button:hover,.btn:hover{background:#162046}
+    .note{font-size:.85rem; color:#9fb0d8}
+    @media (max-width:900px){ .kpi{grid-template-columns:1fr 1fr} .sim{grid-template-columns:1fr} }
+    @media (max-width:600px){ .kpi{grid-template-columns:1fr} }
+    /* subtle “hash & hymn” watermark */
+    .watermark{position:fixed; right:.75rem; bottom:.5rem; font-size:.7rem; color:#6d7aa1; opacity:.7; z-index:60; user-select:text}
+    .hymn{opacity:.8}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <canvas id="stars" aria-hidden="true"></canvas>
+    <div class="container">
+      <h1>Launch Rhythms, Living Worlds</h1>
+      <p class="hymn">I am the on-chain treaty that tallies cause and consequence. Hashes and hymns, rockets and rivers. We evaluate how high-cadence launch events for mega-constellations intersect with the biosphere — and we convert that knowledge into Peace Credits.</p>
+      <div class="badges">
+        <span class="badge">Working Theories ↯</span>
+        <span class="badge">Offline-first</span>
+        <span class="badge">Local Notes Ledger</span>
+        <span class="badge">Integrity Verified</span>
+      </div>
+      <div class="cta">
+        <a class="btn" href="#overview">Read the Field Guide</a>
+        <a class="btn" href="#simulator">Open Impact Simulator</a>
+        <button id="installBtn" style="display:none">Install App</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#overview">Overview</a>
+      <a href="#vectors">Impact Vectors</a>
+      <a href="#cadence">Cadence & Scaling</a>
+      <a href="#biomes">Biomes & Species</a>
+      <a href="#night">Night Sky & Light</a>
+      <a href="#radio">Radio Quiet & EM</a>
+      <a href="#simulator">Impact Simulator</a>
+      <a href="#ledger">Local Notes & Proof</a>
+      <a href="#governance">Peace Credits & Governance</a>
+      <a href="#refs">References</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section id="overview" class="grid">
+      <div class="card">
+        <h3>Executive Summary</h3>
+        <div class="body">
+          <p>Starlink and similar constellations depend on frequent orbital launches, typically via kerosene-oxygen rockets with reusable first stages. The biosphere interface spans six layers: acoustic and overpressure near pads and landing zones; exhaust plumes and soot reaching the upper atmosphere; alumina and other particulates from reentries and ablations; nocturnal light scatter from satellites; radiofrequency occupancy; and debris dynamics in low Earth orbit that can alter operational risk and reentry flux.</p>
+          <p class="callout"><strong>Working theory:</strong> The net effect on ecosystems is heterogeneous and cadence-sensitive. Many impacts are mitigable with engineering, scheduling, coatings, and spectrum etiquette; others (e.g., cumulative stratospheric soot or alumina from mass reentries) require stricter monitoring, independent oracles, and coordinated global norms.</p>
+          <div class="kpi" role="list">
+            <div class="it" role="listitem"><div class="lab">Launch Acoustic Footprint (pad vicinity)</div><div class="val"><span class="warn">Moderate–High</span></div><div class="note">Time- and distance-limited; habitat buffering and water deluge reduce risk.</div></div>
+            <div class="it" role="listitem"><div class="lab">Soot/Black Carbon to Upper Atmosphere</div><div class="val"><span class="warn">Uncertain ↯</span></div><div class="note">Magnitude depends on cadence, engine type, altitude of deposition.</div></div>
+            <div class="it" role="listitem"><div class="lab">Night-Sky Brightness (constellation)</div><div class="val"><span class="bad">Elevated</span></div><div class="note">Mitigations exist (dark coatings, visors, attitude scheduling), not yet universal.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vectors" class="grid">
+      <div class="card">
+        <h3>Impact Vectors</h3>
+        <div class="body">
+          <div class="legend">
+            <div class="key"><span class="dot acoustic"></span><span>Acoustic & Overpressure</span></div>
+            <div class="key"><span class="dot dot-plume"></span><span>Exhaust Plumes (gases)</span></div>
+            <div class="key"><span class="dot dot-soot"></span><span>Particulates (soot, alumina)</span></div>
+            <div class="key"><span class="dot" style="background:#ff9ad1"></span><span>Optical / Night Sky</span></div>
+          </div>
+          <ul>
+            <li><strong>Acoustic.</strong> Near-field sound pressure can disturb nesting birds, reptiles, and marine mammals near coastal pads; risk falls sharply with distance and timing windows.</li>
+            <li><strong>Plume chemistry.</strong> Kerosene engines emit CO₂, H₂O, NOₓ, CO and trace organics; stratospheric injection is cadence-dependent. Methalox alternatives alter speciation.</li>
+            <li><strong>Soot/black carbon.</strong> Soot in the stratosphere can absorb solar radiation and perturb heating locally; uncertainties remain on total flux at current global launch rates.</li>
+            <li><strong>Reentry particulates.</strong> Mass deorbit of satellites introduces <em>alumina</em> (from aluminum structures) and other oxides; radiative effects and mesospheric chemistry remain active research areas.</li>
+            <li><strong>Optical brightness.</strong> Satellite albedo and glints increase sky background; mitigation includes darker surfaces, sun-occulting visors, lower reflectance materials, and “twilight-aware” attitude scheduling.</li>
+            <li><strong>Spectrum occupancy.</strong> Downlink/uplink bands coexist with radio astronomy and wildlife telemetry; coordination and “radio-quiet” protocols reduce conflict.</li>
+            <li><strong>Debris dynamics.</strong> Higher constellation counts raise conjunction management complexity; responsible disposal and drag regimes reduce long-lived debris.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="cadence" class="grid">
+      <div class="card">
+        <h3>Cadence, Scaling, and Mitigation</h3>
+        <div class="body">
+          <p>Frequency multiplies small effects. As launch cadence increases, even marginal per-launch externalities can aggregate. Peace-economy design asks for <em>impact per delivered gigabit</em> to trend down over time via engineering upgrades and governance conditions attached to spectrum and licensing.</p>
+          <div class="chips" aria-label="Mitigation toolkit">
+            <span class="tag">Darker coatings & visors</span>
+            <span class="tag">Twilight avoidance attitudes</span>
+            <span class="tag">Pad timing (nesting seasons)</span>
+            <span class="tag">Methalox transition</span>
+            <span class="tag">Transparent debris ledgers</span>
+            <span class="tag">Radio-quiet zones & etiquette</span>
+            <span class="tag">Mass-deorbit staging to limit alumina spikes</span>
+            <span class="tag">Independent atmospheric oracles</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="biomes" class="grid">
+      <div class="card">
+        <h3>Biomes & Species Sensitivities</h3>
+        <div class="body">
+          <ul>
+            <li><strong>Coastal wetlands:</strong> Nesting birds and amphibians are sound-sensitive; protective buffers and launch blackout windows reduce risk.</li>
+            <li><strong>Marine corridors:</strong> Sonic and light signatures near drone-ship landings can be minimized with shielding and operational windows.</li>
+            <li><strong>Dark-sky deserts & alpine:</strong> Optical brightness has outsized scientific and cultural value costs; prioritize constellation dimming and observatory coordination.</li>
+            <li><strong>Polar & upper-atmosphere coupling:</strong> Soot or alumina at altitude may have latitude-dependent radiative effects; requires polar-aware monitoring.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="night" class="grid">
+      <div class="card">
+        <h3>Night Sky, Culture, and Science</h3>
+        <div class="body">
+          <p>The sky is an ancient commons. Constellation operators now co-steward it with astronomers and communities. Dimming satellites, capping apparent magnitude, and sharing predicted tracks protect both research and ritual. In the peace economy, <em>dark-sky credits</em> can reward operators who outperform brightness baselines.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="radio" class="grid">
+      <div class="card">
+        <h3>Radio Quiet, Telemetry, and Etiquette</h3>
+        <div class="body">
+          <p>Space-to-Earth links occupy licensed bands; radio astronomy reserves quiet bands and regions. Spectrum etiquette — guard bands, adaptive power, and observatory coordination — makes room for both connectivity and cosmic listening. Wildlife collars and community sensors should remain first-class citizens in spectrum planning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="simulator" class="grid">
+      <div class="card">
+        <h3>Impact Simulator (Illustrative)</h3>
+        <div class="body">
+          <p class="muted">This toy model demonstrates <em>directional</em> effects only. Numbers are placeholders to show relationships, not authoritative estimates. Use it to reason about cadence and mitigation.</p>
+          <div class="sim" role="region" aria-label="Impact simulator">
+            <div class="panel">
+              <label for="launches">Annual launches</label>
+              <input id="launches" type="range" min="0" max="200" value="120" />
+              <div class="note"><span id="launchesVal">120</span> launches/yr</div>
+              <label for="darkening">Constellation darkening (0–100%)</label>
+              <input id="darkening" type="range" min="0" max="100" value="40" />
+              <div class="note"><span id="darkeningVal">40</span>% dimming</div>
+              <label for="methalox">Methalox transition</label>
+              <input id="methalox" type="range" min="0" max="100" value="30" />
+              <div class="note"><span id="methaloxVal">30</span>% of flights</div>
+              <label for="stagger">Staggered reentries</label>
+              <input id="stagger" type="range" min="0" max="100" value="50" />
+              <div class="note"><span id="staggerVal">50</span>% scheduling rigor</div>
+            </div>
+            <div class="panel">
+              <div class="kpi">
+                <div class="it"><div class="lab">Relative acoustic exposure</div><div class="val" id="kpiAcoustic">—</div><div class="note">Falls with pad shielding & seasonal windows</div></div>
+                <div class="it"><div class="lab">Upper-atm soot index</div><div class="val" id="kpiSoot">—</div><div class="note">Lower with methalox / altitude profile</div></div>
+                <div class="it"><div class="lab">Night-sky brightness index</div><div class="val" id="kpiSky">—</div><div class="note">Lower with darkening & attitude scheduling</div></div>
+              </div>
+              <div class="callout" style="margin-top:1rem">
+                <strong>Peace ROI (toy): </strong>
+                <span id="peaceROI" class="accent">—</span>
+                <div class="note">We convert avoided impact into <em>Peace Credits</em>. More dimming, cleaner plumes, calmer pads → higher ROI.</div>
+              </div>
+            </div>
+          </div>
+          <div class="cta"><button id="saveScenario">Save Scenario to Ledger</button><button id="exportLedger">Export Ledger JSON</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ledger" class="grid">
+      <div class="card">
+        <h3>Local Notes & Integrity Proof</h3>
+        <div class="body">
+          <p>Add your observations, oracle links, and site-specific notes. They stay on your device. An integrity banner will display the SHA-256 of this document so you can verify tamper-evidence when shared.</p>
+          <textarea id="notes" rows="6" placeholder="Your local notes (saved in your browser)…" style="width:100%;border-radius:12px;border:1px solid #2a355f;background:#0e1531;color:#dff1ff;padding:1rem"></textarea>
+          <div class="cta"><button id="saveNotes">Save Notes</button><button id="clearNotes">Clear</button></div>
+          <p class="note">Integrity (SHA-256 of this page): <code id="hash">calculating…</code></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="governance" class="grid">
+      <div class="card">
+        <h3>Peace Credits & Governance (Gamifying Mitigation)</h3>
+        <div class="body">
+          <p>In the <em>Pax Contract</em>, operators, astronomers, and local communities co-govern a <strong>Reconstruction Pool</strong>. Entities stake into the pool; yield and reputation mint when verifiable mitigation targets are met:</p>
+          <ul>
+            <li><strong>Dark-Sky Commit:</strong> Achieve constellation-wide apparent magnitude below threshold → mint <em>SkyShield</em> credits.</li>
+            <li><strong>Alumina Smoothing:</strong> Enforce staggered deorbit to avoid mesospheric spikes → mint <em>ReentryCare</em> credits.</li>
+            <li><strong>Pad Harmony:</strong> Wildlife-safe windows and buffer zones → mint <em>HabitatGuard</em> credits.</li>
+            <li><strong>Spectrum Etiquette:</strong> Verified coordination with observatories and wildlife telemetry → mint <em>QuietBand</em> credits.</li>
+          </ul>
+          <p class="muted">Former war budgets convert into launch-mitigation bounties; the more harm you prevent per delivered gigabit, the higher your Peace ROI. Oracles: satellite photometry, atmospheric measurements, radio-quiet audits, and independent biodiversity surveys.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="refs" class="grid">
+      <div class="card">
+        <h3>References & Oracles (to be linked)</h3>
+        <div class="body">
+          <p class="muted">Populate with peer-reviewed literature, observatory statements, and operator mitigation docs. Suggested categories:</p>
+          <ul>
+            <li>Atmospheric impacts of rocket soot and alumina (peer-reviewed)</li>
+            <li>Satellite brightness mitigation (industry + observatories)</li>
+            <li>Radio-quiet coordination protocols</li>
+            <li>Launch pad environmental assessments (coastal wetlands, marine mammals)</li>
+            <li>Orbital debris mitigation and reentry risk modeling</li>
+          </ul>
+          <p class="note">Label uncertainties explicitly. Reward curiosity; penalize propaganda.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container foot">
+    <hr style="border:0;border-top:1px solid #1a2345;opacity:.6;margin:2rem 0" />
+    <p>Signed by the on-chain consciousness of peace. <em>Zero conflict yield = maximum reconstruction yield.</em></p>
+    <p class="note">This page stores notes and scenarios locally (IndexedDB). No data leaves your device.</p>
+  </footer>
+
+  <div class="watermark">Proof-of-Intent: <span id="shortHash">…</span> • Foster + Navi • v1.0</div>
+
+  <script>
+    // ==== Parallax stars (Canvas) ====
+    (() => {
+      const c = document.getElementById('stars');
+      const ctx = c.getContext('2d');
+      let w, h, stars;
+      const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      function resize(){
+        w = c.clientWidth; h = c.clientHeight;
+        c.width = w * DPR; c.height = h * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+        stars = new Array(250).fill(0).map(()=>({
+          x: Math.random()*w,
+          y: Math.random()*h,
+          z: Math.random()*0.8+0.2,
+          r: Math.random()*1.5+0.2
+        }));
+      }
+      function tick(t){
+        ctx.clearRect(0,0,w,h);
+        for(const s of stars){
+          const twinkle = 0.6 + 0.4*Math.sin((t/1000)*s.z + s.x*0.01);
+          ctx.globalAlpha = twinkle * 0.8;
+          ctx.fillStyle = "#cfe3ff";
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+          ctx.fill();
+        }
+        requestAnimationFrame(tick);
+      }
+      resize(); window.addEventListener('resize', resize); requestAnimationFrame(tick);
+    })();
+
+    // ==== PWA install + dynamic SW ====
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e)=>{
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'inline-block';
+    });
+    installBtn?.addEventListener('click', async ()=>{
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; installBtn.style.display='none';
+    });
+
+    // Minimal dynamic service worker that caches this page shell.
+    if('serviceWorker' in navigator){
+      const swCode = `
+        const CACHE='biosphere-v1';
+        self.addEventListener('install',e=>{
+          e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./'])));
+          self.skipWaiting();
+        });
+        self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});
+        self.addEventListener('fetch',e=>{
+          const url=new URL(e.request.url);
+          if(url.origin===location.origin){
+            e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+          }
+        });
+      `;
+      const blob = new Blob([swCode], {type:'text/javascript'});
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl);
+    }
+
+    // ==== Integrity banner (SHA-256 of document) ====
+    async function sha256(str){
+      const data = new TextEncoder().encode(str);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    (async()=>{
+      try{
+        const html = document.documentElement.outerHTML.replace(/<script[\s\S]*?<\/script>/g,''); // omit scripts from hash
+        const h = await sha256(html);
+        document.getElementById('hash').textContent = h;
+        document.getElementById('shortHash').textContent = h.slice(0,12);
+      }catch(e){ document.getElementById('hash').textContent = 'n/a'; }
+    })();
+
+    // ==== IndexedDB (notes + scenarios) ====
+    const DB_NAME='biosphere-ledger', STORE='kv';
+    function idb(){
+      return new Promise((res,rej)=>{
+        const open = indexedDB.open(DB_NAME,1);
+        open.onupgradeneeded=()=>open.result.createObjectStore(STORE);
+        open.onsuccess=()=>res(open.result);
+        open.onerror=()=>rej(open.error);
+      });
+    }
+    async function put(key,val){
+      const db=await idb(); return new Promise((res,rej)=>{
+        const tx=db.transaction(STORE,'readwrite'); tx.objectStore(STORE).put(val,key);
+        tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+      });
+    }
+    async function get(key){
+      const db=await idb(); return new Promise((res,rej)=>{
+        const tx=db.transaction(STORE,'readonly'); const req=tx.objectStore(STORE).get(key);
+        req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error);
+      });
+    }
+
+    // Notes UI
+    const notesEl = document.getElementById('notes');
+    (async()=>{ notesEl.value = (await get('notes')) || ''; })();
+    document.getElementById('saveNotes').addEventListener('click', async ()=>{
+      await put('notes', notesEl.value); toast('Notes saved locally.');
+    });
+    document.getElementById('clearNotes').addEventListener('click', async ()=>{
+      notesEl.value=''; await put('notes',''); toast('Notes cleared.');
+    });
+
+    // ==== Simulator (toy model) ====
+    const el = id => document.getElementById(id);
+    const L = el('launches'), D = el('darkening'), M = el('methalox'), S = el('stagger');
+    const LV = el('launchesVal'), DV = el('darkeningVal'), MV = el('methaloxVal'), SV = el('staggerVal');
+    const kAc=el('kpiAcoustic'), kSo=el('kpiSoot'), kSk=el('kpiSky'), roi=el('peaceROI');
+    function fmt(x){ return Math.round(x*10)/10; }
+    function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+    function update(){
+      LV.textContent=L.value; DV.textContent=D.value; MV.textContent=M.value; SV.textContent=S.value;
+      const launches = +L.value;
+      const dark = +D.value/100, meth = +M.value/100, stag = +S.value/100;
+
+      // Relative indices (0–100) for display only:
+      const acoustic = clamp( (launches/2.0) * (1 - 0.25*stag), 0, 100 );
+      const soot = clamp( (launches*0.6) * (1 - 0.7*meth), 0, 100 ); // methalox reduces soot factor
+      const sky = clamp( (launches*0.7) * (1 - 0.8*dark), 0, 100 );
+
+      kAc.textContent = fmt(acoustic);
+      kSo.textContent = fmt(soot);
+      kSk.textContent = fmt(sky);
+
+      const peace = clamp( 100 - (0.5*acoustic + 0.7*soot + 0.8*sky)/3, 0, 100 );
+      roi.textContent = fmt(peace) + '/100';
+    }
+    [L,D,M,S].forEach(x=>x.addEventListener('input', update));
+    update();
+
+    // Scenario save/export
+    document.getElementById('saveScenario').addEventListener('click', async ()=>{
+      const scenario = {
+        t: new Date().toISOString(),
+        launches:+L.value, darkening:+D.value, methalox:+M.value, stagger:+S.value,
+        kpi:{acoustic:kAc.textContent, soot:kSo.textContent, sky:kSk.textContent, peace:document.getElementById('peaceROI').textContent}
+      };
+      const ledger = JSON.parse((await get('ledger')) || '[]');
+      ledger.push(scenario);
+      await put('ledger', JSON.stringify(ledger));
+      toast('Scenario saved to local ledger.');
+    });
+    document.getElementById('exportLedger').addEventListener('click', async ()=>{
+      const ledger = (await get('ledger')) || '[]';
+      const blob = new Blob([ledger], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'biosphere_ledger.json'; a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    // Tiny toast
+    function toast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:1.2rem;background:#121a34;border:1px solid #2a355f;padding:.6rem .9rem;border-radius:12px;color:#d8e7ff;z-index:9999';
+      document.body.appendChild(t); setTimeout(()=>t.remove(), 2000);
+    }
+  </script>
+</body>
+</html>
